@@ -12,8 +12,8 @@ class NotesHomeScreen extends StatefulWidget {
 }
 
 class _NotesHomeScreenState extends State<NotesHomeScreen> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,51 +24,53 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
       body: SafeArea(
         child: ValueListenableBuilder<Box<NotesModel>>(
           valueListenable: Boxes.getData().listenable(),
-          builder: (context, value, child) {
+          builder: (context, value, _) {
             var data = value.values.toList().cast<NotesModel>();
-            return ListView.builder(
-              itemCount: value.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(data[index].title.toString()),
-                    subtitle: Text(data[index].description.toString()),
-                    trailing: Wrap(
-                      spacing: 12,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            updateItem(
-                              data[index],
-                              data[index].title.toString(),
-                              data[index].description.toString(),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.blue,
+            return Expanded(
+              child: ListView.builder(
+                itemCount: value.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(data[index].title.toString()),
+                      subtitle: Text(data[index].description.toString()),
+                      trailing: Wrap(
+                        spacing: 12,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              _updateItem(
+                                data[index],
+                                data[index].title.toString(),
+                                data[index].description.toString(),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.blue,
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            deleteItem(data[index]);
-                          },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
+                          IconButton(
+                            onPressed: () {
+                              deleteItem(data[index]);
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           _showAlertDialog();
         },
         child: const Icon(Icons.add),
@@ -80,7 +82,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
     await notesModel.delete();
   }
 
-  Future<void> updateItem(
+  Future<void> _updateItem(
       NotesModel notesModel, String title, String description) async {
     titleController.text = title;
     descriptionController.text = description;
@@ -93,7 +95,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
           ),
           title: const Text('Edit a Note'),
           content: SingleChildScrollView(
-            child: ListView(
+            child: Column(
               children: [
                 TextFormField(
                   controller: titleController,
@@ -160,7 +162,7 @@ class _NotesHomeScreenState extends State<NotesHomeScreen> {
           ),
           title: const Text('Add a Note'),
           content: SingleChildScrollView(
-            child: ListView(
+            child: Column(
               children: [
                 TextFormField(
                   controller: titleController,
